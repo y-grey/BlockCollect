@@ -1,0 +1,3 @@
+include ':app', ':blockcollect'
+rootProject.name = 'blockcollect-parent'
+
