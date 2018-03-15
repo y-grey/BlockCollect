@@ -16,8 +16,9 @@ import java.util.List;
 
 public class LogMonitor {
 
-    private static final int TIME_BLOCK = 600;//阈值
-    private static final int FREQUENCY = 6;//采样频率
+    private int timeBlock = 600;
+    private int frequency = 6;
+    private boolean toBugly;
 
     private static LogMonitor sInstance = new LogMonitor();
     private HandlerThread mLogThread = new HandlerThread("yph");
@@ -30,7 +31,7 @@ public class LogMonitor {
 
     private Runnable mLogRunnable = new Runnable() {
 
-        int time = FREQUENCY;
+        int time = frequency;
         List<String> list = new ArrayList();
         HashMap<String,StackTraceElement[]> hashMap = new HashMap();
         @Override
@@ -45,16 +46,17 @@ public class LogMonitor {
             hashMap.put(sb.toString(),stackTrace);
             time -- ;
             if(time == 0) {
-                time = FREQUENCY;
+                time = frequency;
                 reList(list);
                 for(String s : list) {
-                    Log.e("BlockDetectUtil", s);
-                    BuglyCar.push(hashMap.get(s));
+                    Log.e("BlockCollect", s);
+                    if(toBugly)
+                        BuglyCar.push(hashMap.get(s));
                 }
                 list.clear();
                 hashMap.clear();
             }else
-                mIoHandler.postDelayed(mLogRunnable, TIME_BLOCK/FREQUENCY);
+                mIoHandler.postDelayed(mLogRunnable, timeBlock / frequency);
         }
     };
     private static void reList(List<String> list){
@@ -69,15 +71,24 @@ public class LogMonitor {
         list.clear();
         list.addAll(reList);
     }
-    public static LogMonitor getInstance() {
+    static LogMonitor getInstance() {
         return sInstance;
     }
 
-    public void startMonitor() {
-        mIoHandler.postDelayed(mLogRunnable, TIME_BLOCK/FREQUENCY);
+    void startMonitor() {
+        mIoHandler.postDelayed(mLogRunnable, timeBlock / frequency);
     }
 
-    public void removeMonitor() {
+    void removeMonitor() {
         mIoHandler.removeCallbacks(mLogRunnable);
+    }
+
+    void setParam(int timeBlock , int frequency) {
+        this.timeBlock = timeBlock;
+        this.frequency = frequency;
+    }
+
+    public void setToBugly(boolean toBugly) {
+        this.toBugly = toBugly;
     }
 }
