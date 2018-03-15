@@ -7,9 +7,11 @@
  * 远程收集日志利用Bugly这趟顺风车.
  
     本地日志：
+    
 ![TextLayoutBuilder logo](https://github.com/qq542391099/BlockCollect/blob/master/screenshot/locallog.png)
     
     远程日志：
+    
 ![TextLayoutBuilder logo](https://github.com/qq542391099/BlockCollect/blob/master/screenshot/buglylog.png)
 
 使用
@@ -55,5 +57,5 @@ public class App extends Application{
 
 Thanks
 ============
- [Bugly](http://blog.csdn.net/u012874222/article/details/79400154)
+ [Bugly](https://bugly.qq.com)
  
