@@ -56,7 +56,7 @@ public class App extends Application{
  [卡顿监测之远程收集log（潜入Bugly这趟顺风车）](http://blog.csdn.net/u012874222/article/details/79417549)
 
 Thanks
-============
+--------
  [Bugly](https://bugly.qq.com)
  
  License
