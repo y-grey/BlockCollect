@@ -6,8 +6,8 @@
  * 卡顿监测利用Android系统每隔16.6ms发出VSYNC信号，来通知界面进行重绘、渲染的原理.
  * 远程收集日志利用Bugly这趟顺风车.
  
-![image](https://github.com/qq542391099/BlockCollect/blob/master/screenshot/locallog.png)
-![image](https://github.com/qq542391099/BlockCollect/blob/master/screenshot/buglylog.png)
+![TextLayoutBuilder logo](https://github.com/qq542391099/BlockCollect/blob/master/screenshot/locallog.png)
+![TextLayoutBuilder logo](https://github.com/qq542391099/BlockCollect/blob/master/screenshot/buglylog.png)
 
 使用
 --------
