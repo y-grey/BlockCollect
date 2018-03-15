@@ -13,7 +13,8 @@ public class App extends Application{
     @Override
     public void onCreate() {
         super.onCreate();
-        CrashReport.initCrashReport(this, "*****", false);
-        BlockDetect.start(true);//BlockDetect.start(true,800,6);
+        CrashReport.initCrashReport(this, "你的AppId", false);
+        BlockDetect.start(true);//是否开车
+       // BlockDetect.start(true,1000,6);//1是否开车，2阈值，3采样
     }
 }

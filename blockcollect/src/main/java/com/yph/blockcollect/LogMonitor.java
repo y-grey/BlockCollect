@@ -16,7 +16,7 @@ import java.util.List;
 
 public class LogMonitor {
 
-    private int timeBlock = 600;
+    private int timeBlock = 800;
     private int frequency = 6;
     private boolean toBugly;
 
