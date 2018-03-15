@@ -6,7 +6,10 @@
  * 卡顿监测利用Android系统每隔16.6ms发出VSYNC信号，来通知界面进行重绘、渲染的原理.
  * 远程收集日志利用Bugly这趟顺风车.
  
+    本地日志：
 ![TextLayoutBuilder logo](https://github.com/qq542391099/BlockCollect/blob/master/screenshot/locallog.png)
+    
+    远程日志：
 ![TextLayoutBuilder logo](https://github.com/qq542391099/BlockCollect/blob/master/screenshot/buglylog.png)
 
 使用
@@ -25,7 +28,7 @@ __3、添加依赖__
 ```groovy
 dependencies {
     compile 'com.tencent.bugly:crashreport:latest.release'
-    compile 'com.yph:blockcollect:1.0.1'
+    compile 'com.yph:blockcollect:1.0.2'
 }
 ```
 __4、初始化__
@@ -47,6 +50,7 @@ public class App extends Application{
 --------
 
  [卡顿监测之真正轻量级的卡顿监测工具BlockDetectUtil（仅一个类）](http://blog.csdn.net/u012874222/article/details/79400154)
+ 
  [卡顿监测之远程收集log（潜入Bugly这趟顺风车）](http://blog.csdn.net/u012874222/article/details/79417549)
 
 Thanks
