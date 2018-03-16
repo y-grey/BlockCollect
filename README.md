@@ -30,7 +30,7 @@ __3、添加依赖__
 ```groovy
 dependencies {
     compile 'com.tencent.bugly:crashreport:latest.release'
-    compile 'com.yph:blockcollect:1.0.2'
+    compile 'com.yph:blockcollect:1.0.1'
 }
 ```
 __4、初始化__
