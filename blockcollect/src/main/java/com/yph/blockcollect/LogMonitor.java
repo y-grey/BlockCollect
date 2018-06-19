@@ -39,6 +39,8 @@ public class LogMonitor {
             if(Debug.isDebuggerConnected())return;
             StringBuilder sb = new StringBuilder();
             StackTraceElement[] stackTrace = Looper.getMainLooper().getThread().getStackTrace();
+            stackTrace[0] = new StackTraceElement("帧率："+count+"FPS "+stackTrace[0].getClassName(),
+                    stackTrace[0].getMethodName(),stackTrace[0].getFileName(),stackTrace[0].getLineNumber());
             for (StackTraceElement s : stackTrace) {
                 sb.append(s.toString() + "\n");
             }
@@ -48,6 +50,7 @@ public class LogMonitor {
             if(time == 0) {
                 time = frequency;
                 reList(list);
+//                Log.e("BlockCollect", "帧率："+count+"FPS");
                 for(String s : list) {
                     Log.e("BlockCollect", s);
                     if(toBugly)
@@ -75,13 +78,24 @@ public class LogMonitor {
         return sInstance;
     }
 
-    void startMonitor() {
+    void reStartMonitor() {
+        count++;
+        mIoHandler.removeCallbacks(mLogRunnable);
         mIoHandler.postDelayed(mLogRunnable, timeBlock / frequency);
     }
 
-    void removeMonitor() {
-        mIoHandler.removeCallbacks(mLogRunnable);
+    void startRecordFps() {
+        mIoHandler.postDelayed(mFpsRunnable,1000);
     }
+
+    int count;
+    private Runnable mFpsRunnable = new Runnable() {
+        @Override
+        public void run() {
+            count = 0;
+            mIoHandler.postDelayed(mFpsRunnable,1000);
+        }
+    };
 
     void setParam(int timeBlock , int frequency) {
         this.timeBlock = timeBlock;

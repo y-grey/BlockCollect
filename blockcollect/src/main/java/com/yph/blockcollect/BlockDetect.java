@@ -15,13 +15,12 @@ public class BlockDetect {
 
     public static void start(boolean toBugly) {
         LogMonitor.getInstance().setToBugly(toBugly);
-        LogMonitor.getInstance().removeMonitor();
-        LogMonitor.getInstance().startMonitor();
+        LogMonitor.getInstance().reStartMonitor();
+        LogMonitor.getInstance().startRecordFps();
         Choreographer.getInstance().postFrameCallback(new Choreographer.FrameCallback() {
             @Override
             public void doFrame(long frameTimeNanos) {
-                LogMonitor.getInstance().removeMonitor();
-                LogMonitor.getInstance().startMonitor();
+                LogMonitor.getInstance().reStartMonitor();
                 Choreographer.getInstance().postFrameCallback(this);
             }
         });
