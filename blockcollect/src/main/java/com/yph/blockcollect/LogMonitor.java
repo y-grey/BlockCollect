@@ -32,15 +32,15 @@ public class LogMonitor {
     private Runnable mLogRunnable = new Runnable() {
 
         int time = frequency;
-        List<String> list = new ArrayList();
-        HashMap<String,StackTraceElement[]> hashMap = new HashMap();
+        List<String> list = new ArrayList<>();
+        HashMap<String,StackTraceElement[]> hashMap = new HashMap<>();
         @Override
         public void run() {
             if(Debug.isDebuggerConnected())return;
             StringBuilder sb = new StringBuilder();
             StackTraceElement[] stackTrace = Looper.getMainLooper().getThread().getStackTrace();
-            stackTrace[0] = new StackTraceElement("帧率："+count+"FPS "+stackTrace[0].getClassName(),
-                    stackTrace[0].getMethodName(),stackTrace[0].getFileName(),stackTrace[0].getLineNumber());
+//            stackTrace[0] = new StackTraceElement("帧率："+"FPS "+stackTrace[0].getClassName(),
+//                    stackTrace[0].getMethodName(),stackTrace[0].getFileName(),stackTrace[0].getLineNumber());
             for (StackTraceElement s : stackTrace) {
                 sb.append(s.toString() + "\n");
             }
@@ -50,7 +50,6 @@ public class LogMonitor {
             if(time == 0) {
                 time = frequency;
                 reList(list);
-//                Log.e("BlockCollect", "帧率："+count+"FPS");
                 for(String s : list) {
                     Log.e("BlockCollect", s);
                     if(toBugly)
@@ -62,6 +61,7 @@ public class LogMonitor {
                 mIoHandler.postDelayed(mLogRunnable, timeBlock / frequency);
         }
     };
+
     private static void reList(List<String> list){
         List<String> reList = new ArrayList<>();
         String lastLog = "";
@@ -74,28 +74,14 @@ public class LogMonitor {
         list.clear();
         list.addAll(reList);
     }
-    static LogMonitor getInstance() {
+    static LogMonitor get() {
         return sInstance;
     }
 
     void reStartMonitor() {
-        count++;
         mIoHandler.removeCallbacks(mLogRunnable);
         mIoHandler.postDelayed(mLogRunnable, timeBlock / frequency);
     }
-
-    void startRecordFps() {
-        mIoHandler.postDelayed(mFpsRunnable,1000);
-    }
-
-    int count;
-    private Runnable mFpsRunnable = new Runnable() {
-        @Override
-        public void run() {
-            count = 0;
-            mIoHandler.postDelayed(mFpsRunnable,1000);
-        }
-    };
 
     void setParam(int timeBlock , int frequency) {
         this.timeBlock = timeBlock;
