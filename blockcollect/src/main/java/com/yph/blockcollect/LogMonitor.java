@@ -19,6 +19,9 @@ public class LogMonitor {
     private int timeBlock = 800;
     private int frequency = 6;
     private boolean toBugly;
+    private int time = frequency;
+    private List<String> list = new ArrayList<>();
+    private HashMap<String,StackTraceElement[]> hashMap = new HashMap<>();
 
     private static LogMonitor sInstance = new LogMonitor();
     private HandlerThread mLogThread = new HandlerThread("yph");
@@ -30,10 +33,6 @@ public class LogMonitor {
     }
 
     private Runnable mLogRunnable = new Runnable() {
-
-        int time = frequency;
-        List<String> list = new ArrayList<>();
-        HashMap<String,StackTraceElement[]> hashMap = new HashMap<>();
         @Override
         public void run() {
             if(Debug.isDebuggerConnected())return;
@@ -80,6 +79,9 @@ public class LogMonitor {
 
     void reStartMonitor() {
         mIoHandler.removeCallbacks(mLogRunnable);
+        time = frequency;
+        list.clear();
+        hashMap.clear();
         mIoHandler.postDelayed(mLogRunnable, timeBlock / frequency);
     }
 
