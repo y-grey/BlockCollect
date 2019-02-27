@@ -4,11 +4,12 @@ import android.os.Debug;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
+import android.text.TextUtils;
 import android.util.Log;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by _yph on 2018/3/14 0014.
@@ -19,69 +20,63 @@ public class LogMonitor {
     private int timeBlock = 800;
     private int frequency = 6;
     private boolean toBugly;
-    private int time = frequency;
-    private List<String> list = new ArrayList<>();
-    private HashMap<String,StackTraceElement[]> hashMap = new HashMap<>();
 
+    private AtomicBoolean isReStart = new AtomicBoolean();
     private static LogMonitor sInstance = new LogMonitor();
-    private HandlerThread mLogThread = new HandlerThread("yph");
     private Handler mIoHandler;
 
     private LogMonitor() {
+        HandlerThread mLogThread = new HandlerThread("yph");
         mLogThread.start();
         mIoHandler = new Handler(mLogThread.getLooper());
     }
 
     private Runnable mLogRunnable = new Runnable() {
+        private HashMap<String,StackTraceElement[]> stackMap = new HashMap<>();
+        private String lastStackTraceStr;
+        private int time = frequency;
         @Override
         public void run() {
             if(Debug.isDebuggerConnected())return;
-            StringBuilder sb = new StringBuilder();
-            StackTraceElement[] stackTrace = Looper.getMainLooper().getThread().getStackTrace();
-//            stackTrace[0] = new StackTraceElement("帧率："+"FPS "+stackTrace[0].getClassName(),
-//                    stackTrace[0].getMethodName(),stackTrace[0].getFileName(),stackTrace[0].getLineNumber());
-            for (StackTraceElement s : stackTrace) {
-                sb.append(s.toString() + "\n");
+            if(isReStart.compareAndSet(true,false)){
+                stackMap.clear();
+                lastStackTraceStr = null;
+                time = frequency;
             }
-            list.add(sb.toString());
-            hashMap.put(sb.toString(),stackTrace);
+            StackTraceElement[] stackTrace = Looper.getMainLooper().getThread().getStackTrace();
+            String stackTraceStr = StackTraceUtil.toSimpleString(stackTrace);
+            if (!TextUtils.isEmpty(stackTraceStr)
+                    && !TextUtils.isEmpty(lastStackTraceStr)
+                    && lastStackTraceStr.equals(stackTraceStr)
+                    && !stackMap.containsKey(stackTraceStr)){//连续两次相同的堆栈才保存,捕捉耗时方法
+                stackMap.put(stackTraceStr,stackTrace);
+            }
             time -- ;
             if(time == 0) {
-                time = frequency;
-                reList(list);
-                for(String s : list) {
-                    Log.e("BlockCollect", s);
-                    if(toBugly)
-                        BuglyCar.push(hashMap.get(s));
+                if(stackMap.isEmpty()){//未捕捉到耗时方法，说明发生了执行连续多个不耗时方法所造成的卡顿
+                    stackMap.put(stackTraceStr,stackTrace);//取最后一个卡顿堆栈用于分析
                 }
-                list.clear();
-                hashMap.clear();
-            }else
+                for (Map.Entry<String,StackTraceElement[]> entry : stackMap.entrySet()) {
+                    Log.e("BlockCollect", entry.getKey());
+                    if(toBugly) {
+                        BuglyCar.push(entry.getValue());
+                    }
+                }
+                isReStart.set(true);
+            }else {
+                lastStackTraceStr = stackTraceStr;
                 mIoHandler.postDelayed(mLogRunnable, timeBlock / frequency);
+            }
         }
     };
 
-    private static void reList(List<String> list){
-        List<String> reList = new ArrayList<>();
-        String lastLog = "";
-        for(String s : list){
-            if(s.equals(lastLog) && !reList.contains(s)) {
-                reList.add(s);
-            }
-            lastLog = s;
-        }
-        list.clear();
-        list.addAll(reList);
-    }
     static LogMonitor get() {
         return sInstance;
     }
 
     void reStartMonitor() {
         mIoHandler.removeCallbacks(mLogRunnable);
-        time = frequency;
-        list.clear();
-        hashMap.clear();
+        isReStart.set(true);
         mIoHandler.postDelayed(mLogRunnable, timeBlock / frequency);
     }
 
