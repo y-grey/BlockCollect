@@ -53,13 +53,16 @@ public class LogMonitor {
             }
             time -- ;
             if(time == 0) {
-                if(stackMap.isEmpty()){//未捕捉到耗时方法，说明发生了执行连续多个不耗时方法所造成的卡顿
+                if(!TextUtils.isEmpty(stackTraceStr)
+                        && stackMap.isEmpty()){//未捕捉到耗时方法，说明发生了执行连续多个不耗时方法所造成的卡顿
                     stackMap.put(stackTraceStr,stackTrace);//取最后一个卡顿堆栈用于分析
                 }
-                for (Map.Entry<String,StackTraceElement[]> entry : stackMap.entrySet()) {
-                    Log.e("BlockCollect", entry.getKey());
-                    if(toBugly) {
-                        BuglyCar.push(entry.getValue());
+                if(!stackMap.isEmpty()) {
+                    for (Map.Entry<String, StackTraceElement[]> entry : stackMap.entrySet()) {
+                        Log.e("BlockCollect", entry.getKey());
+                        if (toBugly) {
+                            BuglyCar.push(entry.getValue());
+                        }
                     }
                 }
                 isReStart.set(true);
